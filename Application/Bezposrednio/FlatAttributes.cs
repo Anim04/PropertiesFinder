@@ -103,57 +103,11 @@ namespace Application.Bezposrednio
             }
         }
 
-        public string CreationDateTime   //<---Musiałem zmienić typ na string (zazwyczaj zamiast daty pojawia się lakoniczne "ponad 14, 30 dni temu")
+        public DateTime CreationDateTime   //<---Musiałem zmienić typ na string (zazwyczaj zamiast daty pojawia się lakoniczne "ponad 14, 30 dni temu")
         {
             get
             {
-                HtmlNodeCollection nodes = docWebPage.DocumentNode.SelectNodes("//div[@class='property__info']");
-                string informationText;
-
-                if (nodes != null)
-                {
-                    foreach (HtmlNode node in nodes)
-                    {
-
-                        foreach (var div in node.ChildNodes)
-                        {
-                            informationText = div.InnerText.ToLower();
-                            if (informationText.Contains("dodano"))
-                            {
-                                string result = replacePolishDiactricMarks(Regex.Replace(informationText, @"^.*:  ", ""));
-                                return result;
-                            }
-                        }
-                    }
-                }
-                return null;
-            }
-        }
-
-        public string? LastUpdateDateTime   //<---Musiałem zmienić typ na string (zazwyczaj zamiast daty pojawia się lakoniczne "ponad 14, 30 dni temu")
-        {
-            get
-            {
-                HtmlNodeCollection nodes = docWebPage.DocumentNode.SelectNodes("//ul[@class='property__params-list']");
-                string informationText;
-                if (nodes != null)
-                {
-                    foreach (HtmlNode node in nodes)
-                    {
-
-                        foreach (var li in node.ChildNodes)
-                        {
-                            informationText = li.InnerText.ToLower();
-
-                            if (informationText.Contains("ostatnia aktualizacja"))
-                            {
-                                informationText = replacePolishDiactricMarks(Regex.Replace(informationText, @"^.*: ", ""));
-                                return informationText;
-                            }
-                        }
-                    }
-                }
-                return null;
+                return DateTime.Now;
             }
         }
 
@@ -175,7 +129,7 @@ namespace Application.Bezposrednio
                     return email;
                 }
 
-                return null;
+                return "";
             }
         }
         public string Telephone    // <---telefon tylko jako <img> (straszny bezsens ;p ) lub w opisie(ze względu na swoistość zachowania w opisie podaję tylko informację, że prawdopodobnie numer telefonu jest w opisie)
@@ -188,7 +142,7 @@ namespace Application.Bezposrednio
                     return "Check the description, please";
                 }
 
-                return null;
+                return "";
             }
         }
         public string Name     // Brak właściciela, kontaktu do sprzedawcy
@@ -201,7 +155,7 @@ namespace Application.Bezposrednio
                     return "Check the description, please";
                 }
 
-                return null;
+                return "";
             }
         }
 
@@ -409,7 +363,7 @@ namespace Application.Bezposrednio
             }
         }
 
-        public PolishCity? City     //<----niewymagane, jeśłi miejscowość nieznana  lub nierozpoznana
+        public PolishCity City     //<----niewymagane, jeśłi miejscowość nieznana  lub nierozpoznana
         {
             get
             {
@@ -498,15 +452,6 @@ namespace Application.Bezposrednio
                     }
                 }
                 return "";
-            }
-        }
-
-
-        public string? DetailedAddress  //<---nie ma sensu większego, skoro mam ulicę, dzielnice i miasto :) 
-        {
-            get
-            {
-                return null;
             }
         }
 
@@ -606,7 +551,7 @@ namespace Application.Bezposrednio
                 }
             }
         }
-        public string? OutdoorParkingPlaces // <---jedyna forma informacji to parkowanie (niezależnie czy dom, czy moieszkanie), dlatego uzupełniam tylko jedną informację o parkingu (w dodatku jako string)
+        public int? OutdoorParkingPlaces // <---jedyna forma informacji to parkowanie (niezależnie czy dom, czy moieszkanie), dlatego uzupełniam tylko jedną informację o parkingu (w dodatku jako string)
         {
             get
             {
@@ -624,12 +569,12 @@ namespace Application.Bezposrednio
                             if (additionaInformation.Contains("parkowanie"))
                             {
                                 additionaInformation = replacePolishDiactricMarks(Regex.Replace(additionaInformation, @"^.*: ", ""));
-                                return additionaInformation;
+                                return 1;
                             }
                         }
                     }
                 }
-                return null;
+                return 0;
             }
         }
 

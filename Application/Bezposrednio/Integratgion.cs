@@ -91,7 +91,6 @@ namespace Application.OfertyDom
             {
                 Url = flatAttributes.Url,
                 CreationDateTime = flatAttributes.CreationDateTime,
-                LastUpdateDateTime = flatAttributes.LastUpdateDateTime,
                 OfferKind = flatAttributes.OfferKind,
                 SellerContact = new SellerContact
                 {
@@ -136,7 +135,6 @@ namespace Application.OfertyDom
                 City = flatAttributes.City,
                 District = flatAttributes.District,
                 StreetName = flatAttributes.StreetName,
-                DetailedAddress = flatAttributes.DetailedAddress,
             };
             return propertyAddress;
         }
