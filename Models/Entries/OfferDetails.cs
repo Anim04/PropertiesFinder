@@ -12,12 +12,12 @@ namespace Models
         /// <summary>
         /// Data stworzenia oferty
         /// </summary>
-        public DateTime CreationDateTime { get; set; }
+        public string CreationDateTime { get; set; }
 
         /// <summary>
         /// Data ostatniej aktualizacji oferty
         /// </summary>
-        public DateTime? LastUpdateDateTime { get; set; }
+        public string? LastUpdateDateTime { get; set; }
 
         /// <summary>
         /// Rodzaj oferty - wynajem czy sprzedaż

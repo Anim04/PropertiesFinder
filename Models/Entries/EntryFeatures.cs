@@ -22,7 +22,7 @@
         /// <summary>
         /// Ilość miejsc prakingowych naziemnych. "0" w przypadku braku miejsc, "null" w przypadku braku danych
         /// </summary>
-        public int? OutdoorParkingPlaces { get; set; }
+        public string? OutdoorParkingPlaces { get; set; }
         /// <summary>
         /// Ilość miejsc prakingowych podziemnych/garażowych. "0" w przypadku braku miejsc, "null" w przypadku braku danych
         /// </summary>
