@@ -1,10 +1,12 @@
 ﻿using HtmlAgilityPack;
 using Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
+using Tesseract;
 
 namespace Application.Bezposrednio
 {
@@ -13,11 +15,13 @@ namespace Application.Bezposrednio
 
         private HtmlDocument docWebPage;
         private string url;
+        private int counerrrr = 0;
 
         public FlatAttributes(HtmlDocument docWebPage, string url)
         {
             this.docWebPage = docWebPage;
             this.url = url;
+            counerrrr = 0;
         }
 
 
@@ -132,17 +136,73 @@ namespace Application.Bezposrednio
                 return "";
             }
         }
-        public string Telephone    // <---telefon tylko jako <img> (straszny bezsens ;p ) lub w opisie(ze względu na swoistość zachowania w opisie podaję tylko informację, że prawdopodobnie numer telefonu jest w opisie)
+        public string Telephone
         {
             get
             {
-                bool isEmail = findInDecription("tel");
-                if (isEmail)
+                string telephone = "";
+                HtmlNode imgNode = docWebPage.DocumentNode.SelectSingleNode("//div[@class='worker__listings']//div//img");
+                string imgHref = null;
+                if (imgNode != null)
                 {
-                    return "Check the description, please";
+                    imgHref = imgNode.Attributes["src"].Value;
+
+
+                    string nameImg = imgHref.Replace("/", "");
+                    string local = $"../../../Bezposrednio/images/{nameImg}";
+                    string save = $"../../../Bezposrednio/images/New{nameImg}";
+
+                    if (imgHref != null)
+                    {
+                        Uri url = new Uri($"https://bezposrednio.net.pl{imgHref}");
+                        using (WebClient webClient = new WebClient())
+                        {
+                            webClient.DownloadFile(url, local);
+
+                            float width = 1024;
+                            float height = 768;
+                            var brush = new SolidBrush(Color.White);
+                            var image = new Bitmap(local);
+                            float scale = Math.Min(width / image.Width, height / image.Height);
+
+                            var bmp = new Bitmap((int)width, (int)height);
+                            var graph = Graphics.FromImage(bmp);
+
+                            graph.InterpolationMode = InterpolationMode.High;
+                            graph.CompositingQuality = CompositingQuality.HighQuality;
+                            graph.SmoothingMode = SmoothingMode.AntiAlias;
+
+                            var scaleWidth = (int)(image.Width * scale);
+                            var scaleHeight = (int)(image.Height * scale);
+
+                            graph.FillRectangle(brush, new RectangleF(0, 0, width, height));
+                            graph.DrawImage(image, ((int)width - scaleWidth) / 2, ((int)height - scaleHeight) / 2, scaleWidth, scaleHeight);
+                            bmp.Save(save);
+                            var ocrtext = string.Empty;
+                            using (var engine = new TesseractEngine(@"../../../tessdata", "eng", EngineMode.Default))
+                            {
+                                using (var img = Pix.LoadFromFile(save))
+                                {
+                                    using (var page = engine.Process(img, PageSegMode.Auto))
+                                    {
+                                        telephone = Regex.Replace(page.GetText(), @"[^\d]", "");
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
                 }
 
-                return "";
+                //czasami znaczek telefonu jest odczytywany jako cyfra 1
+                if(telephone.Length==10)
+                {
+                    telephone = telephone.Substring(1);
+                }
+
+                Console.WriteLine(telephone + "  " + this.url);
+                return telephone;
             }
         }
         public string Name     // Brak właściciela, kontaktu do sprzedawcy
@@ -523,32 +583,14 @@ namespace Application.Bezposrednio
         {
             get
             {
-                if (findInDecription("piwnica"))
+                if (findInDecription("piwnic"))
                 {
                     return 1;
                 }
-                else
-                {
-                    HtmlNodeCollection nodes = docWebPage.DocumentNode.SelectNodes("//ul[@class='property__params-list property__params-list--options']");
-                    string additionaInformation;
-                    if (nodes != null)
-                    {
-                        foreach (HtmlNode node in nodes)
-                        {
 
-                            foreach (var li in node.ChildNodes)
-                            {
-                                additionaInformation = li.InnerText.ToLower();
-                                if (additionaInformation.Contains("piwnica"))
-                                {
-                                    return 1;
-                                }
-                            }
-                        }
-                        return 0;
-                    }
-                    return null;
-                }
+
+                return null;
+              
             }
         }
         public int? OutdoorParkingPlaces // <---jedyna forma informacji to parkowanie (niezależnie czy dom, czy moieszkanie), dlatego uzupełniam tylko jedną informację o parkingu (w dodatku jako string)

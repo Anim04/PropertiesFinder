@@ -4,6 +4,7 @@ using System;
 using HtmlAgilityPack;
 using System.Collections.Generic;
 using Application.Bezposrednio;
+using System.IO;
 
 namespace Application.OfertyDom
 {
@@ -36,6 +37,8 @@ namespace Application.OfertyDom
         public Dump GenerateDump()
         {
             List<Entry> entries = GetFlatForSalesEntries() ;
+
+            cleanImagesDirectory();
 
             return new Dump
             {
@@ -201,6 +204,24 @@ namespace Application.OfertyDom
             }
 
             return true;
+        }
+
+        private void cleanImagesDirectory()
+        {
+            string path = $"../../../Bezposrednio/images/"; ;
+            System.IO.DirectoryInfo di = new DirectoryInfo(path);
+
+            foreach (FileInfo file in di.GetFiles())
+            {
+                try
+                {
+                    file.Delete();
+                }
+                catch (Exception)
+                {
+                }
+            }
+
         }
     }
 }
