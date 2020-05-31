@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Utilities;
+using DatabaseConnection;
 
 namespace SampleApp
 {
@@ -12,6 +13,11 @@ namespace SampleApp
     {
         static void Main()
         {
+            /*using DatabaseContext dbContext = new DatabaseContext();
+            dbContext.Entries.Add(new Entry { RawDescription = "TEST_TMP" });
+            dbContext.SaveChanges();*/
+
+
             var entriesComparersTypes = GetTypesThatImplementsInterface(typeof(IEqualityComparer<Entry>));
             var firstComparer = Activator.CreateInstance(entriesComparersTypes.First());
 

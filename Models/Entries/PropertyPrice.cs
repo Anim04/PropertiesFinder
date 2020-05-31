@@ -16,5 +16,8 @@
         /// Szacowany koszt miesięcznych opłat.
         /// </summary>
         public decimal? ResidentalRent { get; set; }
+
+        public int ID { get; set; }
+
     }
 }

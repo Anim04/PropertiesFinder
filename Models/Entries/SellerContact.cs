@@ -10,5 +10,8 @@
         /// Imię i nazwisko sprzedwcy
         /// </summary>
         public string Name { get; set; }
+
+        public int ID { get; set; }
+
     }
 }
