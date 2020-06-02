@@ -8,7 +8,7 @@ using System.IO;
 
 namespace Application.OfertyDom
 {
-    class Integratgion : IWebSiteIntegration
+    public class Integratgion : IWebSiteIntegration
     {
         public WebPage WebPage { get; }
         public IDumpsRepository DumpsRepository { get; }
@@ -36,7 +36,7 @@ namespace Application.OfertyDom
 
         public Dump GenerateDump()
         {
-            List<Entry> entries = GetFlatForSalesEntries() ;
+            List<Entry> entries = GetFlatForSalesEntries();
 
             cleanImagesDirectory();
 
@@ -48,7 +48,25 @@ namespace Application.OfertyDom
             };
         }
 
-        public List<Entry> GetFlatForSalesEntries()
+        public static List<Entry> GetEntryByPage(int pageNumber)
+        {
+            List<Entry> flatList = new List<Entry>();
+            Entry flatDetail = new Entry();
+            List<string> urls = collectUrlPerSite(pageNumber);
+
+
+            foreach (var url in urls)
+            {
+                flatDetail = getEntryForFlat(url);
+                flatList.Add(flatDetail);
+
+            }
+
+
+            return flatList;
+        }
+
+        public static List<Entry> GetFlatForSalesEntries()
         {
             List<Entry> flatList = new List<Entry>();
             Entry flatDetail = new Entry();
@@ -66,9 +84,10 @@ namespace Application.OfertyDom
             return flatList;
         }
 
-        private Entry getEntryForFlat(string url)
+        private static Entry getEntryForFlat(string url)
         {
-            string offerUrl = $"{WebPage.Url}{url}";
+            string url_base = "https://bezposrednio.net.pl/";
+            string offerUrl = $"{url_base}{url}";
             HtmlWeb htmlWeb = new HtmlWeb();
             HtmlDocument doc = htmlWeb.Load(offerUrl);
             FlatAttributes flatAttributes = new FlatAttributes(doc, offerUrl);
@@ -87,7 +106,7 @@ namespace Application.OfertyDom
             return flatDetails;
         }
 
-        private OfferDetails getOfferDetails(FlatAttributes flatAttributes)
+        private static OfferDetails getOfferDetails(FlatAttributes flatAttributes)
         {
 
             OfferDetails offerDetails = new OfferDetails()
@@ -108,7 +127,7 @@ namespace Application.OfertyDom
             return offerDetails;        
         }
 
-        private PropertyPrice getPropertyPrice(FlatAttributes flatAttributes)
+        private static PropertyPrice getPropertyPrice(FlatAttributes flatAttributes)
         {
             PropertyPrice propertyPrice = new PropertyPrice()
             {
@@ -119,7 +138,7 @@ namespace Application.OfertyDom
             return propertyPrice;
         }
 
-        private PropertyDetails getPropertyDetails(FlatAttributes flatAttributes)
+        private static PropertyDetails getPropertyDetails(FlatAttributes flatAttributes)
         {
             PropertyDetails propertyDetails = new PropertyDetails()
             {
@@ -131,7 +150,7 @@ namespace Application.OfertyDom
             return propertyDetails;
         }
 
-        private PropertyAddress getPropertyAddress(FlatAttributes flatAttributes)
+        private static PropertyAddress getPropertyAddress(FlatAttributes flatAttributes)
         {
             PropertyAddress propertyAddress = new PropertyAddress()
             {
@@ -142,7 +161,7 @@ namespace Application.OfertyDom
             return propertyAddress;
         }
 
-        private PropertyFeatures getPropertyFeatures(FlatAttributes flatAttributes)
+        private static PropertyFeatures getPropertyFeatures(FlatAttributes flatAttributes)
         {
             PropertyFeatures propertyFeatures = new PropertyFeatures()
             {
@@ -154,14 +173,27 @@ namespace Application.OfertyDom
             return propertyFeatures;
         }
 
-        private string getRawDescription(FlatAttributes flatAttributes)
+        private static string getRawDescription(FlatAttributes flatAttributes)
         {
             string rawDescription = flatAttributes.RawDescription;
             return rawDescription;
         }
 
+        private static List<string> collectUrlPerSite(int page)
+        {
+            List<string> flatUrlList = new List<string>();
 
-        private List<string> collectAllUrls()
+
+            string url = $"https://bezposrednio.net.pl/?site=szukaj&kategoria=2&typ_trans_id=1&miejscowosc=warszawa&strona={page}";
+            HtmlWeb web = new HtmlWeb();
+            HtmlDocument doc = web.Load(url);
+            addSalesAdvURL(doc, flatUrlList);
+
+
+            return flatUrlList;
+        }
+
+        private static List<string> collectAllUrls()
         {
             List<string> flatUrlList = new List<string>();
             int counter = 1;
@@ -189,7 +221,7 @@ namespace Application.OfertyDom
             return flatUrlList;
         }
 
-        private bool addSalesAdvURL(HtmlDocument doc, List<string> flatUrlList)
+        private static bool addSalesAdvURL(HtmlDocument doc, List<string> flatUrlList)
         {
             HtmlNodeCollection hrefs = doc.DocumentNode.SelectNodes("//a[@class='properties__address']");
 
@@ -208,7 +240,7 @@ namespace Application.OfertyDom
 
         private void cleanImagesDirectory()
         {
-            string path = $"../../../Bezposrednio/images/"; ;
+            string path = $"Bezposrednio/images/"; ;
             System.IO.DirectoryInfo di = new DirectoryInfo(path);
 
             foreach (FileInfo file in di.GetFiles())

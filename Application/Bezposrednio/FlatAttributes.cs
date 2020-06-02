@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Tesseract;
 
@@ -15,13 +16,11 @@ namespace Application.Bezposrednio
 
         private HtmlDocument docWebPage;
         private string url;
-        private int counerrrr = 0;
 
         public FlatAttributes(HtmlDocument docWebPage, string url)
         {
             this.docWebPage = docWebPage;
             this.url = url;
-            counerrrr = 0;
         }
 
 
@@ -147,10 +146,9 @@ namespace Application.Bezposrednio
                 {
                     imgHref = imgNode.Attributes["src"].Value;
 
-
                     string nameImg = imgHref.Replace("/", "");
-                    string local = $"../../../Bezposrednio/images/{nameImg}";
-                    string save = $"../../../Bezposrednio/images/New{nameImg}";
+                    string local = $"Bezposrednio/images/{nameImg}";
+                    string save = $"Bezposrednio/images/New{nameImg}";
 
                     if (imgHref != null)
                     {
@@ -179,7 +177,12 @@ namespace Application.Bezposrednio
                             graph.DrawImage(image, ((int)width - scaleWidth) / 2, ((int)height - scaleHeight) / 2, scaleWidth, scaleHeight);
                             bmp.Save(save);
                             var ocrtext = string.Empty;
-                            using (var engine = new TesseractEngine(@"../../../tessdata", "eng", EngineMode.Default))
+
+                            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+                            path = Path.Combine(path, "tessdata");
+                            path = path.Replace("file:\\", "");
+
+                            using (var engine = new TesseractEngine(path, "eng", EngineMode.Default))
                             {
                                 using (var img = Pix.LoadFromFile(save))
                                 {
