@@ -147,9 +147,10 @@ namespace Application.Bezposrednio
                     imgHref = imgNode.Attributes["src"].Value;
 
                     string nameImg = imgHref.Replace("/", "");
-                    string local = $"Bezposrednio/images/{nameImg}";
-                    string save = $"Bezposrednio/images/New{nameImg}";
-
+                    string path2 = Path.GetDirectoryName("Bezposrednio/images/");
+                    string local = $"{path2}/{nameImg}";
+                    string save = $"{path2}/New{nameImg}";
+                    System.IO.Directory.CreateDirectory(path2);
                     if (imgHref != null)
                     {
                         Uri url = new Uri($"https://bezposrednio.net.pl{imgHref}");
