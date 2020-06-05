@@ -20,6 +20,7 @@ namespace IntegrationApi.Controllers
                 integrationName = "bezposrednio.net.pl",
                 studentIndex = "s132376",
                 studentName = "Piotr Amilusik"
+
             };
 
             return Ok(data);
